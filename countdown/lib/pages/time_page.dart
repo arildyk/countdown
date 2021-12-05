@@ -1,3 +1,4 @@
+import 'package:countdown/config/palette.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -56,38 +57,60 @@ class _TimePageState extends State<TimePage> {
           height: screen.size.height - screen.padding.top,
           padding: const EdgeInsets.all(20),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
+              const Text(
+                'Countdown',
+                style: TextStyle(fontSize: 30),
+              ),
               TextField(
+                style: const TextStyle(fontSize: 30),
+                decoration: const InputDecoration(
+                  label: Text('Days'),
+                ),
                 controller: _daysController,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: false),
                 onSubmitted: (_) => _submitData(),
               ),
               TextField(
+                style: const TextStyle(fontSize: 30),
+                decoration: const InputDecoration(
+                  label: Text('Hours'),
+                ),
                 controller: _hoursController,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: false),
                 onSubmitted: (_) => _submitData(),
               ),
               TextField(
+                style: const TextStyle(fontSize: 30),
+                decoration: const InputDecoration(
+                  label: Text('Minutes'),
+                ),
                 controller: _minutesController,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: false),
                 onSubmitted: (_) => _submitData(),
               ),
               TextField(
+                style: const TextStyle(fontSize: 30),
+                decoration: const InputDecoration(
+                  label: Text('Seconds'),
+                ),
                 controller: _secondsController,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: false),
                 onSubmitted: (_) => _submitData(),
               ),
-              ElevatedButton(
+              IconButton(
+                icon: const Icon(Icons.check_circle),
+                color: turquoise,
                 onPressed: () {
+                  _submitData();
                   CountdownPage.countdownStarted = true;
-                  _submitData;
                   Navigator.pushNamed(context, CountdownPage.routeName);
                 },
-                child: const Text('Back'),
               ),
             ],
           ),
