@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:countdown/config/palette.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'countdown_page.dart';
 
@@ -47,12 +50,12 @@ class _TimePageState extends State<TimePage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Scaffold buildTimePage(BuildContext context, bool bottom) {
     final screen = MediaQuery.of(context);
 
     return Scaffold(
       body: SafeArea(
+        bottom: bottom,
         child: Container(
           height: screen.size.height - screen.padding.top,
           padding: const EdgeInsets.all(20),
@@ -103,19 +106,47 @@ class _TimePageState extends State<TimePage> {
                     const TextInputType.numberWithOptions(decimal: false),
                 onSubmitted: (_) => _submitData(),
               ),
-              IconButton(
-                icon: const Icon(Icons.check_circle),
-                color: turquoise,
-                onPressed: () {
-                  _submitData();
-                  CountdownPage.countdownStarted = true;
-                  Navigator.pushNamed(context, CountdownPage.routeName);
-                },
+              Visibility(
+                visible: MediaQuery.of(context).viewInsets.bottom == 0,
+                child: IconButton(
+                  icon: const Icon(Icons.check_circle),
+                  color: turquoise,
+                  onPressed: () {
+                    _submitData();
+                    CountdownPage.countdownStarted = true;
+                    Navigator.pushNamed(context, CountdownPage.routeName);
+                  },
+                ),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    SystemUiOverlayStyle _statusBarLight = SystemUiOverlayStyle.dark.copyWith(
+      statusBarColor: Theme.of(context).primaryColor,
+      systemNavigationBarColor: Theme.of(context).primaryColor,
+      systemNavigationBarIconBrightness: Brightness.dark,
+      systemNavigationBarDividerColor: Theme.of(context).primaryColor,
+    );
+
+    SystemUiOverlayStyle _statusBarDark = SystemUiOverlayStyle.light.copyWith(
+      statusBarColor: Theme.of(context).primaryColor,
+      systemNavigationBarColor: Theme.of(context).primaryColor,
+      systemNavigationBarIconBrightness: Brightness.light,
+      systemNavigationBarDividerColor: Theme.of(context).primaryColor,
+    );
+
+    return Platform.isIOS
+        ? buildTimePage(context, false)
+        : AnnotatedRegion<SystemUiOverlayStyle>(
+            value: Theme.of(context).brightness == Brightness.light
+                ? _statusBarLight
+                : _statusBarDark,
+            child: buildTimePage(context, true));
   }
 }
