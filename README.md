@@ -8,9 +8,9 @@ Countdown lets you enter a time where it's timer will start counting.
 
 ## Screenshots
 
-|![Time Page Android](screenshots/TimePage.png)|![Countdown Page Android](screenshots/CountdownPage.png)|
-|---|---|
-|![Time Page iOS](screenshots/TimePageiOS.png)|![Countdown Page iOS](screenshots/CountdownPageiOS.png)|
+|![Time Page Android Light](screenshots/TimePageLight.jpg)|![Time Page Android Dark](screenshots/TimePageDark.jpg)|![Countdown Page Android Light](screenshots/CountdownPageLight.jpg)|![Countdown Page Android Dark](screenshots/CountdownPageDark.jpg)|
+|---|---|---|---|
+|![Time Page iOS Light](screenshots/TimePageLightiOS.png)|![Time Page iOS Light](screenshots/TimePageDarkiOS.png)|![Countdown Page iOS Dark](screenshots/CountdownPageLightiOS.png)|![Countdown Page iOS Dark](screenshots/CountdownPageDarkiOS.png)|
 
 ## Features
 - Offline
