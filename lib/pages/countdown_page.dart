@@ -7,28 +7,44 @@ import 'package:countdown/config/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:quiver/async.dart';
 
+import 'time_page.dart';
+
 class CountdownPage extends StatefulWidget {
   const CountdownPage({Key? key}) : super(key: key);
   static const routeName = '/countdown-page';
 
-  static int days = 0;
-  static int hours = 0;
-  static int minutes = 0;
-  static int seconds = 0;
-
-  static bool countdownStarted = false;
+  static int _days = 0;
+  static int _hours = 0;
+  static int _minutes = 0;
+  static int _seconds = 0;
 
   static int _currentDays = 0;
   static int _currentHours = 0;
   static int _currentMinutes = 0;
   static int _currentSeconds = 0;
 
+  static int get currentDays {
+    return _currentDays;
+  }
+
+  static int get currentHours {
+    return _currentHours;
+  }
+
+  static int get currentMinutes {
+    return _currentMinutes;
+  }
+
+  static int get currentSeconds {
+    return _currentSeconds;
+  }
+
   static void setCountdownTime(int enteredDays, int enteredHours,
       int enteredMinutes, int enteredSeconds) {
-    days = enteredDays;
-    hours = enteredHours;
-    minutes = enteredMinutes;
-    seconds = enteredSeconds;
+    _days = enteredDays;
+    _hours = enteredHours;
+    _minutes = enteredMinutes;
+    _seconds = enteredSeconds;
   }
 
   @override
@@ -38,10 +54,10 @@ class CountdownPage extends StatefulWidget {
 class _CountdownPageState extends State<CountdownPage> {
   StreamSubscription<CountdownTimer> streamSub = CountdownTimer(
     Duration(
-      days: CountdownPage.days,
-      hours: CountdownPage.hours,
-      minutes: CountdownPage.minutes,
-      seconds: CountdownPage.seconds + 1,
+      days: CountdownPage._days,
+      hours: CountdownPage._hours,
+      minutes: CountdownPage._minutes,
+      seconds: CountdownPage._seconds + 1,
     ),
     const Duration(milliseconds: 1),
   ).listen(null);
@@ -50,6 +66,10 @@ class _CountdownPageState extends State<CountdownPage> {
 
   @override
   void initState() {
+    if (mounted) {
+      startCountdown();
+    }
+
     super.initState();
     setState(() {
       initController();
@@ -63,6 +83,9 @@ class _CountdownPageState extends State<CountdownPage> {
 
   @override
   void dispose() {
+    if (mounted) {
+      streamSub.pause();
+    }
     _confettiController.dispose();
     super.dispose();
   }
@@ -76,7 +99,6 @@ class _CountdownPageState extends State<CountdownPage> {
       numberOfParticles: 25,
       gravity: 0.05,
       shouldLoop: false,
-      // manually specify the colors to be used
     );
   }
 
@@ -96,22 +118,22 @@ class _CountdownPageState extends State<CountdownPage> {
     });
   }
 
-  FractionallySizedBox buildCountdownTimerBar(
-      double percentage, LinearGradient gradient) {
-    return FractionallySizedBox(
-      widthFactor: percentage,
-      child: Container(
-        height: 10,
-        decoration: BoxDecoration(
-          gradient: gradient,
-          borderRadius: BorderRadius.circular(10),
+  Flexible buildCountdownTimerBar(double percentage, LinearGradient gradient) {
+    return Flexible(
+      child: FractionallySizedBox(
+        widthFactor: percentage,
+        child: Container(
+          height: 10,
+          decoration: BoxDecoration(
+            gradient: gradient,
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       ),
     );
   }
 
-  double timerBarSize(int currentTime, int time, int factor) {
-    if (time == 0) return 0;
+  double timerBarSize(int currentTime, int factor) {
     return currentTime / factor;
   }
 
@@ -147,15 +169,9 @@ class _CountdownPageState extends State<CountdownPage> {
                   const Text('D', style: TextStyle(fontSize: 36)),
                 ],
               ),
-              Flexible(
-                child: buildCountdownTimerBar(
-                  timerBarSize(
-                    CountdownPage._currentDays,
-                    CountdownPage.days % 30,
-                    30,
-                  ),
-                  gradient,
-                ),
+              buildCountdownTimerBar(
+                timerBarSize(CountdownPage._currentDays, 30),
+                gradient,
               ),
               Row(
                 children: [
@@ -168,15 +184,9 @@ class _CountdownPageState extends State<CountdownPage> {
                   const Text('H', style: TextStyle(fontSize: 36)),
                 ],
               ),
-              Flexible(
-                child: buildCountdownTimerBar(
-                  timerBarSize(
-                    CountdownPage._currentHours,
-                    CountdownPage.hours % 24,
-                    24,
-                  ),
-                  gradient,
-                ),
+              buildCountdownTimerBar(
+                timerBarSize(CountdownPage._currentHours, 24),
+                gradient,
               ),
               Row(
                 children: [
@@ -189,15 +199,9 @@ class _CountdownPageState extends State<CountdownPage> {
                   const Text('M', style: TextStyle(fontSize: 36)),
                 ],
               ),
-              Flexible(
-                child: buildCountdownTimerBar(
-                  timerBarSize(
-                    CountdownPage._currentMinutes,
-                    CountdownPage.minutes % 60,
-                    60,
-                  ),
-                  gradient,
-                ),
+              buildCountdownTimerBar(
+                timerBarSize(CountdownPage._currentMinutes, 60),
+                gradient,
               ),
               Row(
                 children: [
@@ -214,21 +218,15 @@ class _CountdownPageState extends State<CountdownPage> {
                     icon: const Icon(Icons.arrow_forward_ios),
                     color: Colors.white,
                     onPressed: () {
-                      streamSub.cancel();
+                      TimePage.getDataFromCountdown();
                       Navigator.pop(context);
                     },
                   ),
                 ],
               ),
-              Flexible(
-                child: buildCountdownTimerBar(
-                  timerBarSize(
-                    CountdownPage._currentSeconds,
-                    CountdownPage.seconds % 60,
-                    60,
-                  ),
-                  gradient,
-                ),
+              buildCountdownTimerBar(
+                timerBarSize(CountdownPage._currentSeconds, 60),
+                gradient,
               ),
             ],
           ),
@@ -239,11 +237,6 @@ class _CountdownPageState extends State<CountdownPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (CountdownPage.countdownStarted) {
-      startCountdown();
-      CountdownPage.countdownStarted = false;
-    }
-
     return Platform.isIOS
         ? buildCountdownPage(false)
         : buildCountdownPage(true);

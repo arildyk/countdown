@@ -10,43 +10,63 @@ import 'countdown_page.dart';
 class TimePage extends StatefulWidget {
   const TimePage({Key? key}) : super(key: key);
 
+  static final _daysController = TextEditingController();
+  static final _hoursController = TextEditingController();
+  static final _minutesController = TextEditingController();
+  static final _secondsController = TextEditingController();
+
+  static void getDataFromCountdown() {
+    _daysController.text = CountdownPage.currentDays.toString();
+    _hoursController.text = CountdownPage.currentHours.toString();
+    _minutesController.text = CountdownPage.currentMinutes.toString();
+    _secondsController.text = CountdownPage.currentSeconds.toString();
+  }
+
   @override
   _TimePageState createState() => _TimePageState();
 }
 
 class _TimePageState extends State<TimePage> {
-  final _daysController = TextEditingController();
-  final _hoursController = TextEditingController();
-  final _minutesController = TextEditingController();
-  final _secondsController = TextEditingController();
-
   void _submitData() {
-    if (_daysController.text.isEmpty) {
-      _daysController.text = "0";
+    if (TimePage._daysController.text.isEmpty) {
+      TimePage._daysController.text = "0";
     }
 
-    if (_hoursController.text.isEmpty) {
-      _hoursController.text = "0";
+    if (TimePage._hoursController.text.isEmpty) {
+      TimePage._hoursController.text = "0";
     }
 
-    if (_minutesController.text.isEmpty) {
-      _minutesController.text = "0";
+    if (TimePage._minutesController.text.isEmpty) {
+      TimePage._minutesController.text = "0";
     }
 
-    if (_secondsController.text.isEmpty) {
-      _secondsController.text = "0";
+    if (TimePage._secondsController.text.isEmpty) {
+      TimePage._secondsController.text = "0";
     }
 
-    final enteredDays = int.tryParse(_daysController.text);
-    final enteredHours = int.tryParse(_hoursController.text);
-    final enteredMinutes = int.tryParse(_minutesController.text);
-    final enteredSeconds = int.tryParse(_secondsController.text);
+    final enteredDays = int.tryParse(TimePage._daysController.text);
+    final enteredHours = int.tryParse(TimePage._hoursController.text);
+    final enteredMinutes = int.tryParse(TimePage._minutesController.text);
+    final enteredSeconds = int.tryParse(TimePage._secondsController.text);
 
     CountdownPage.setCountdownTime(
       enteredDays!,
       enteredHours!,
       enteredMinutes!,
       enteredSeconds!,
+    );
+  }
+
+  TextField buildTextField(String timeName, TextEditingController controller) {
+    return TextField(
+      style: const TextStyle(fontSize: 30),
+      decoration: InputDecoration(
+        label: Text(timeName),
+      ),
+      controller: controller,
+      keyboardType: const TextInputType.numberWithOptions(decimal: false),
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      onSubmitted: (_) => _submitData(),
     );
   }
 
@@ -66,46 +86,10 @@ class _TimePageState extends State<TimePage> {
                 'Countdown',
                 style: TextStyle(fontSize: 30),
               ),
-              TextField(
-                style: const TextStyle(fontSize: 30),
-                decoration: const InputDecoration(
-                  label: Text('Days'),
-                ),
-                controller: _daysController,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: false),
-                onSubmitted: (_) => _submitData(),
-              ),
-              TextField(
-                style: const TextStyle(fontSize: 30),
-                decoration: const InputDecoration(
-                  label: Text('Hours'),
-                ),
-                controller: _hoursController,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: false),
-                onSubmitted: (_) => _submitData(),
-              ),
-              TextField(
-                style: const TextStyle(fontSize: 30),
-                decoration: const InputDecoration(
-                  label: Text('Minutes'),
-                ),
-                controller: _minutesController,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: false),
-                onSubmitted: (_) => _submitData(),
-              ),
-              TextField(
-                style: const TextStyle(fontSize: 30),
-                decoration: const InputDecoration(
-                  label: Text('Seconds'),
-                ),
-                controller: _secondsController,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: false),
-                onSubmitted: (_) => _submitData(),
-              ),
+              buildTextField('Days', TimePage._daysController),
+              buildTextField('Hours', TimePage._hoursController),
+              buildTextField('Minutes', TimePage._minutesController),
+              buildTextField('Seconds', TimePage._secondsController),
               Visibility(
                 visible: MediaQuery.of(context).viewInsets.bottom == 0,
                 child: IconButton(
@@ -113,7 +97,7 @@ class _TimePageState extends State<TimePage> {
                   color: turquoise,
                   onPressed: () {
                     _submitData();
-                    CountdownPage.countdownStarted = true;
+                    //CountdownPage.countdownStarted = true;
                     Navigator.pushNamed(context, CountdownPage.routeName);
                   },
                 ),
@@ -147,6 +131,7 @@ class _TimePageState extends State<TimePage> {
             value: Theme.of(context).brightness == Brightness.light
                 ? _statusBarLight
                 : _statusBarDark,
-            child: buildTimePage(context, true));
+            child: buildTimePage(context, true),
+          );
   }
 }
