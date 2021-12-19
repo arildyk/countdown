@@ -216,7 +216,9 @@ class _CountdownPageState extends State<CountdownPage> {
                   IconButton(
                     alignment: Alignment.centerRight,
                     icon: const Icon(Icons.arrow_forward_ios),
-                    color: Colors.white,
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.white
+                        : darkBackgroundColor,
                     onPressed: () {
                       TimePage.getDataFromCountdown();
                       Navigator.pop(context);
